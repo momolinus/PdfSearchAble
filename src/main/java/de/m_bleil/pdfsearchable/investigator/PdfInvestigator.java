@@ -38,9 +38,8 @@ public class PdfInvestigator {
 						try {
 							return PDDocument.load(f.toFile());
 						} catch (IOException e) {
-							e.printStackTrace();
+							throw new RuntimeException(e);
 						}
-						return null;
 					}));
 
 			pool = Executors.newCachedThreadPool();
