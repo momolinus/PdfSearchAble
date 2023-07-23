@@ -31,16 +31,7 @@ public class PdfInvestigator {
 		try {
 			pdfFiles = Files.walk(root).collect(Collectors.toList());
 
-			pdfDocuments = pdfFiles
-					.stream()
-					.filter(f -> f.toString().endsWith(PDF_FILE_EXTENSION))
-					.collect(Collectors.toMap(f -> f, f -> {
-						try {
-							return PDDocument.load(f.toFile());
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
-					}));
+			pdfDocuments = fetchPDDocuments(pdfFiles);
 
 			pool = Executors.newCachedThreadPool();
 			completionService = new ExecutorCompletionService<>(pool);
@@ -59,14 +50,28 @@ public class PdfInvestigator {
 			}
 
 			System.out.println("Duration: " + (System.nanoTime() - start));
+
 		} catch (IOException | InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} finally {
 			if (pool != null)
 				pool.shutdown();
 		}
 
 		return results;
+	}
+
+	public Map<Path, PDDocument> fetchPDDocuments(List<Path> pdfFiles) {
+		return pdfFiles
+				.stream()
+				.filter(f -> f.toString().endsWith(PDF_FILE_EXTENSION))
+				.collect(Collectors.toMap(f -> f, f -> {
+					try {
+						return PDDocument.load(f.toFile());
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}));
 	}
 
 	public List<PdfInfo> investigatePath(String string) {
