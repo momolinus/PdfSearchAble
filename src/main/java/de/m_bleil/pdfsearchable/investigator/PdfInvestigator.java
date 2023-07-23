@@ -22,6 +22,22 @@ public class PdfInvestigator {
 
 	public static final String PDF_FILE_EXTENSION = ".pdf";
 
+	private ArrayList<PdfInfo> buildResult(Map<Path, PDDocument> pdfDocuments,
+			CompletionService<PdfInfo> completionService)
+			throws InterruptedException, ExecutionException {
+
+		var results = new ArrayList<PdfInfo>();
+
+		for (int i = 0; i < pdfDocuments.size(); i++) {
+			Future<PdfInfo> result;
+
+			result = completionService.take();
+			results.add(result.get());
+		}
+
+		return results;
+	}
+
 	private Map<Path, PDDocument> fetchPDDocuments(List<Path> pdfFiles) {
 		return pdfFiles
 				.stream()
@@ -40,7 +56,7 @@ public class PdfInvestigator {
 		Map<Path, PDDocument> pdfDocuments;
 		ExecutorService pool = null;
 		CompletionService<PdfInfo> completionService;
-		var results = new ArrayList<PdfInfo>();
+		ArrayList<PdfInfo> results;
 
 		try {
 			pdfFiles = Files.walk(root).collect(Collectors.toList());
@@ -52,16 +68,9 @@ public class PdfInvestigator {
 
 			long start = System.nanoTime();
 
-			pdfDocuments.forEach((path, doc) -> {
-				completionService.submit(new ExtractText(path, doc));
-			});
+			pdfDocuments.forEach((p, d) -> completionService.submit(new ExtractText(p, d)));
 
-			for (int i = 0; i < pdfDocuments.size(); i++) {
-				Future<PdfInfo> result;
-
-				result = completionService.take();
-				results.add(result.get());
-			}
+			results = buildResult(pdfDocuments, completionService);
 
 			Logger.trace("Duration: {}", (System.nanoTime() - start));
 
