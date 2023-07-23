@@ -16,10 +16,24 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.tinylog.Logger;
 
 public class PdfInvestigator {
 
 	public static final String PDF_FILE_EXTENSION = ".pdf";
+
+	private Map<Path, PDDocument> fetchPDDocuments(List<Path> pdfFiles) {
+		return pdfFiles
+				.stream()
+				.filter(f -> f.toString().endsWith(PDF_FILE_EXTENSION))
+				.collect(Collectors.toMap(f -> f, f -> {
+					try {
+						return PDDocument.load(f.toFile());
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}));
+	}
 
 	public List<PdfInfo> investigatePath(Path root) {
 		List<Path> pdfFiles = null;
@@ -49,7 +63,7 @@ public class PdfInvestigator {
 				results.add(result.get());
 			}
 
-			System.out.println("Duration: " + (System.nanoTime() - start));
+			Logger.trace("Duration: {}", (System.nanoTime() - start));
 
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
@@ -59,19 +73,6 @@ public class PdfInvestigator {
 		}
 
 		return results;
-	}
-
-	public Map<Path, PDDocument> fetchPDDocuments(List<Path> pdfFiles) {
-		return pdfFiles
-				.stream()
-				.filter(f -> f.toString().endsWith(PDF_FILE_EXTENSION))
-				.collect(Collectors.toMap(f -> f, f -> {
-					try {
-						return PDDocument.load(f.toFile());
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}));
 	}
 
 	public List<PdfInfo> investigatePath(String string) {

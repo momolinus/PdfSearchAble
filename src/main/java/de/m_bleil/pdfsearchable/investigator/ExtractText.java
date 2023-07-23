@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.tinylog.Logger;
 
 class ExtractText implements Callable<PdfInfo> {
 
@@ -23,7 +24,7 @@ class ExtractText implements Callable<PdfInfo> {
 
 	@Override
 	public PdfInfo call() throws Exception {
-		System.out.println(Thread.currentThread().getName());
+		Logger.trace("Thread: {}", Thread.currentThread().getName());
 
 		PDFTextStripper pdfStripper = new PDFTextStripper();
 		String content = pdfStripper.getText(this.document);
