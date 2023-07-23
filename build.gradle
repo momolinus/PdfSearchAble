@@ -1,0 +1,49 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+task initSourceFolders {
+	doLast {
+   		sourceSets*.java.srcDirs*.each { it.mkdirs() }
+   		sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+   }
+}
+
+dependencies {
+	implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+	testImplementation 'org.assertj:assertj-core:3.23.1'
+}
+
+eclipse {
+
+	// TODO das geht nicht, vermutlich weil eclipse {..} nicht der task,
+	// sonder "was anderes" ist
+	//dependsOn 'cleanEclipse'
+
+	// das geht aber
+
+	 eclipseClasspath {
+	 dependsOn 'cleanEclipseClasspath'
+	 }
+
+
+	project {
+		name = 'PdfSearchAble'
+	}
+
+	classpath {
+		// default Wert ist true
+		downloadSources = true
+		// default Wert ist false
+		downloadJavadoc = true
+	}
+}
