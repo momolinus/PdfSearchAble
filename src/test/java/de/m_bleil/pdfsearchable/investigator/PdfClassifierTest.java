@@ -7,13 +7,33 @@ import static org.hamcrest.Matchers.*;
 public class PdfClassifierTest {
 
 	@Test
+	public void testATextCorrectClassified() {
+		PdfInfo text = new PdfInfo(null, "Hello World");
+		PdfClassifier classifier = new PdfClassifier();
+
+		boolean searchAbel = classifier.classify(text);
+
+		assertThat(searchAbel, is(true));
+	}
+
+	@Test
 	public void testEmptyTextCorrectClassified() {
 		PdfInfo emptyText = new PdfInfo(null, "");
 		PdfClassifier classifier = new PdfClassifier();
 
-		int searchAbel = classifier.classify(emptyText);
+		boolean searchAbel = classifier.classify(emptyText);
 
-		assertThat(searchAbel, is(0));
+		assertThat(searchAbel, is(false));
+	}
+
+	@Test
+	public void testNewLinesCorrectClassified() {
+		PdfInfo newLineText = new PdfInfo(null, "\nz\r");
+		PdfClassifier classifier = new PdfClassifier();
+
+		boolean searchAbel = classifier.classify(newLineText);
+
+		assertThat(searchAbel, is(true));
 	}
 
 	@Test
@@ -21,18 +41,18 @@ public class PdfClassifierTest {
 		PdfInfo nullText = new PdfInfo(null, null);
 		PdfClassifier classifier = new PdfClassifier();
 
-		int searchAbel = classifier.classify(nullText);
+		boolean searchAbel = classifier.classify(nullText);
 
-		assertThat(searchAbel, is(0));
+		assertThat(searchAbel, is(false));
 	}
 
 	@Test
-	public void testATextCorrectClassified() {
-		PdfInfo nullText = new PdfInfo(null, "Hello World");
+	public void testOnlyNewLinesCorrectClassified() {
+		PdfInfo newLineText = new PdfInfo(null, "\n\r");
 		PdfClassifier classifier = new PdfClassifier();
 
-		int searchAbel = classifier.classify(nullText);
+		boolean searchAbel = classifier.classify(newLineText);
 
-		assertThat(searchAbel, is(100));
+		assertThat(searchAbel, is(false));
 	}
 }
