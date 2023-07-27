@@ -1,7 +1,6 @@
 package de.m_bleil.pdfsearchable.investigator;
 
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -92,12 +91,8 @@ public class PdfInvestigator {
 						return pdD;
 					}
 					catch (IOException e) {
-						// throw new RuntimeException(e);
 						Logger.warn(e);
 						return null;
-					}
-					finally {
-						IOUtils.closeQuietly(pdD);
 					}
 				}));
 	}
@@ -127,6 +122,8 @@ public class PdfInvestigator {
 			pdfDocuments.forEach((p, d) -> completionService.submit(new ExtractText(p, d)));
 
 			results = buildResult(pdfDocuments, completionService);
+
+			pdfDocuments.forEach((p, d) -> IOUtils.closeQuietly(d));
 
 			Logger.trace("Duration: {}", (System.nanoTime() - start));
 
