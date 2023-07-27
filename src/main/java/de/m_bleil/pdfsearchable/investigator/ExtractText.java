@@ -29,6 +29,6 @@ class ExtractText implements Callable<PdfInfo> {
 		PDFTextStripper pdfStripper = new PDFTextStripper();
 		String content = pdfStripper.getText(this.document);
 
-		return new PdfInfo(this.path, content);
+		return new PdfInfo(this.path, content, false);
 	}
 }

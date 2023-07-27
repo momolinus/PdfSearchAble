@@ -45,7 +45,7 @@ public class ClassificationApp extends JFrame {
 						+ "\n"
 						+ r.path()
 						+ "\n"
-						+ classifier.classify(r)));
+						+ classifier.classify(r.content())));
 	}
 
 	private void onOpenRoot(ActionEvent event) {

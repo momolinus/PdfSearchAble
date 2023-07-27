@@ -6,10 +6,6 @@ import java.util.stream.Collectors;
 
 public class PdfClassifier {
 
-	public boolean classify(PdfInfo emptyText) {
-		return classify(emptyText.content());
-	}
-
 	public boolean classify(String text) {
 		if (text == null)
 			return false;

@@ -8,50 +8,45 @@ public class PdfClassifierTest {
 
 	@Test
 	public void testATextCorrectClassified() {
-		PdfInfo text = new PdfInfo(null, "Hello World");
 		PdfClassifier classifier = new PdfClassifier();
 
-		boolean searchAbel = classifier.classify(text);
+		boolean searchAbel = classifier.classify("Hello World");
 
 		assertThat(searchAbel, is(true));
 	}
 
 	@Test
 	public void testEmptyTextCorrectClassified() {
-		PdfInfo emptyText = new PdfInfo(null, "");
 		PdfClassifier classifier = new PdfClassifier();
 
-		boolean searchAbel = classifier.classify(emptyText);
+		boolean searchAbel = classifier.classify("");
 
 		assertThat(searchAbel, is(false));
 	}
 
 	@Test
 	public void testNewLinesCorrectClassified() {
-		PdfInfo newLineText = new PdfInfo(null, "\nz\r");
 		PdfClassifier classifier = new PdfClassifier();
 
-		boolean searchAbel = classifier.classify(newLineText);
+		boolean searchAbel = classifier.classify("\nz\r");
 
 		assertThat(searchAbel, is(true));
 	}
 
 	@Test
 	public void testNullTextCorrectClassified() {
-		PdfInfo nullText = new PdfInfo(null, null);
 		PdfClassifier classifier = new PdfClassifier();
 
-		boolean searchAbel = classifier.classify(nullText);
+		boolean searchAbel = classifier.classify(null);
 
 		assertThat(searchAbel, is(false));
 	}
 
 	@Test
 	public void testOnlyNewLinesCorrectClassified() {
-		PdfInfo newLineText = new PdfInfo(null, "\n\r");
 		PdfClassifier classifier = new PdfClassifier();
 
-		boolean searchAbel = classifier.classify(newLineText);
+		boolean searchAbel = classifier.classify("\n\r");
 
 		assertThat(searchAbel, is(false));
 	}
