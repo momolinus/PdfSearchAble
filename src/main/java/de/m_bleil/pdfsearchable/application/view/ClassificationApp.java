@@ -12,6 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -23,7 +24,7 @@ public class ClassificationApp extends JFrame {
 
 	private JFileChooser rootChooser;
 	private JTextField rootPathTextField;
-	private JTextArea outPut;
+	private JTextArea resultTextArea;
 
 	public ClassificationApp() {
 		setSize(800, 600);
@@ -31,6 +32,7 @@ public class ClassificationApp extends JFrame {
 		setLocationRelativeTo(null);
 
 		this.setLayout(new BorderLayout(20, 20));
+
 		init();
 	}
 
@@ -40,12 +42,12 @@ public class ClassificationApp extends JFrame {
 
 		List<PdfInfo> result = inv.investigatePath(rootPathTextField.getText());
 
-		result.forEach(r -> outPut
-				.setText(outPut.getText()
-						+ "\n"
+		result.forEach(r -> resultTextArea
+				.setText(resultTextArea.getText()
+						+ (classifier.classify(r.content()) ? "durchsuchbar:" : "nicht durchsuchbar:")
+						+ "\t"
 						+ r.path()
-						+ "\n"
-						+ classifier.classify(r.content())));
+						+ "\n"));
 	}
 
 	private void onOpenRoot(ActionEvent event) {
@@ -59,9 +61,11 @@ public class ClassificationApp extends JFrame {
 	private void init() {
 		initRootChooserPanel();
 
-		outPut = new JTextArea();
-		outPut.setAutoscrolls(true);
-		this.add(outPut, BorderLayout.CENTER);
+		resultTextArea = new JTextArea();
+		JScrollPane resultTextAreasScrollPane = new JScrollPane(resultTextArea,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.add(resultTextAreasScrollPane, BorderLayout.CENTER);
 
 		JPanel panel = new JPanel();
 		JButton startButton = new JButton("Start");
