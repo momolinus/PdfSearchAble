@@ -16,15 +16,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import de.m_bleil.pdfsearchable.application.controller.ClassificationController;
+import de.m_bleil.pdfsearchable.application.model.ClassificationModel;
+import de.m_bleil.pdfsearchable.application.model.ClassificationModelListener;
 import de.m_bleil.pdfsearchable.investigator.PdfClassifier;
 import de.m_bleil.pdfsearchable.investigator.PdfInfo;
 import de.m_bleil.pdfsearchable.investigator.PdfInvestigator;
 
-public class ClassificationApp extends JFrame {
+public class ClassificationApp extends JFrame implements ClassificationModelListener {
 
 	private JFileChooser rootChooser;
 	private JTextField rootPathTextField;
 	private JTextArea resultTextArea;
+
+	private ClassificationModel classificationModel;
+	private ClassificationController classificationController;
 
 	public ClassificationApp() {
 		setSize(800, 600);
@@ -33,10 +39,14 @@ public class ClassificationApp extends JFrame {
 
 		this.setLayout(new BorderLayout(20, 20));
 
-		init();
+		this.classificationModel = new ClassificationModel();
+		this.classificationModel.addListener(this);
+		this.classificationController = new ClassificationController(this.classificationModel);
+
+		initGui();
 	}
 
-	private void onStart(ActionEvent event) {
+	private void onStartPdfClassification(ActionEvent event) {
 		PdfInvestigator inv = new PdfInvestigator();
 		PdfClassifier classifier = new PdfClassifier();
 
@@ -44,7 +54,8 @@ public class ClassificationApp extends JFrame {
 
 		result.forEach(r -> resultTextArea
 				.setText(resultTextArea.getText()
-						+ (classifier.classify(r.content()) ? "durchsuchbar:" : "nicht durchsuchbar:")
+						+ (classifier.classify(r.content()) ? "durchsuchbar:"
+								: "nicht durchsuchbar:")
 						+ "\t"
 						+ r.path()
 						+ "\n"));
@@ -58,7 +69,7 @@ public class ClassificationApp extends JFrame {
 		}
 	}
 
-	private void init() {
+	private void initGui() {
 		initRootChooserPanel();
 
 		resultTextArea = new JTextArea();
@@ -71,8 +82,9 @@ public class ClassificationApp extends JFrame {
 		JButton startButton = new JButton("Start");
 		panel.add(startButton);
 		this.add(panel, BorderLayout.SOUTH);
-
-		startButton.addActionListener(this::onStart);
+		startButton.addActionListener(
+				e -> classificationController
+						.startButtonEvent(rootPathTextField.getText()));
 	}
 
 	private void initRootChooserPanel() {
@@ -104,5 +116,17 @@ public class ClassificationApp extends JFrame {
 	public static void main(String[] args) {
 		ClassificationApp application = new ClassificationApp();
 		application.setVisible(true);
+	}
+
+	@Override
+	public void newPdfInfoClassification(PdfInfo pdfInfo) {
+		PdfClassifier classifier = new PdfClassifier();
+
+		resultTextArea.setText(resultTextArea.getText()
+				+ (classifier.classify(pdfInfo.content()) ? "durchsuchbar:"
+						: "nicht durchsuchbar:")
+				+ "\t"
+				+ pdfInfo.path()
+				+ "\n");
 	}
 }

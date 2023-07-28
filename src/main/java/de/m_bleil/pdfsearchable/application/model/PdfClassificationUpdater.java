@@ -1,4 +1,4 @@
-package de.m_bleil.pdfsearchable.investigator;
+package de.m_bleil.pdfsearchable.application.model;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,13 +15,30 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import javax.swing.SwingWorker;
+
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.tinylog.Logger;
 
-public class PdfInvestigator {
+import de.m_bleil.pdfsearchable.investigator.ExtractText;
+import de.m_bleil.pdfsearchable.investigator.PdfClassifier;
+import de.m_bleil.pdfsearchable.investigator.PdfFileVisitor;
+import de.m_bleil.pdfsearchable.investigator.PdfInfo;
+
+public class PdfClassificationUpdater extends SwingWorker<List<PdfInfo>, PdfInfo> {
 
 	public static final String PDF_FILE_EXTENSION = ".pdf";
+	public static final String PDF_CLASSIFIED = "pdf_classified";
+
+	private String path;
+	private PdfClassifier classifier;
+
+	public PdfClassificationUpdater(String path) {
+		this.path = path;
+		classifier = new PdfClassifier();
+	}
 
 	private ArrayList<PdfInfo> buildResult(Map<Path, PDDocument> pdfDocuments,
 			CompletionService<PdfInfo> completionService)
@@ -33,7 +50,11 @@ public class PdfInvestigator {
 			Future<PdfInfo> result;
 
 			result = completionService.take();
-			results.add(result.get());
+			PdfInfo pdfInfo = result.get();
+			results.add(pdfInfo);
+			publish(pdfInfo);
+
+			firePropertyChange(PDF_CLASSIFIED, null, pdfInfo);
 		}
 
 		return results;
@@ -44,19 +65,21 @@ public class PdfInvestigator {
 				.stream()
 				.filter(f -> f.toString().endsWith(PDF_FILE_EXTENSION))
 				.collect(Collectors.toMap(f -> f, f -> {
-					PDDocument pdD = null;
 					try {
-						pdD = PDDocument.load(f.toFile());
+						var pdD = PDDocument.load(f.toFile());
 						return pdD;
 					}
 					catch (IOException e) {
 						Logger.warn(e);
-						return null;
+						var pdD = new PDDocument();
+						pdD.addPage(new PDPage());
+						return pdD;
 					}
 				}));
 	}
 
-	public List<PdfInfo> investigatePath(Path root) {
+	@Override
+	protected List<PdfInfo> doInBackground() throws Exception {
 		List<Path> pdfFiles = null;
 		Map<Path, PDDocument> pdfDocuments;
 		ExecutorService pool = null;
@@ -64,12 +87,9 @@ public class PdfInvestigator {
 		ArrayList<PdfInfo> results;
 
 		try {
-//			pdfFiles = Files
-//					.walk(root, FileVisitOption.FOLLOW_LINKS)
-//					.collect(Collectors.toList());
 
 			pdfFiles = new ArrayList<Path>();
-			Files.walkFileTree(root, new PdfFileVisitor(pdfFiles));
+			Files.walkFileTree(Paths.get(path), new PdfFileVisitor(pdfFiles));
 
 			pdfDocuments = fetchPDDocuments(pdfFiles);
 
@@ -98,7 +118,15 @@ public class PdfInvestigator {
 		return results;
 	}
 
-	public List<PdfInfo> investigatePath(String string) {
-		return investigatePath(Paths.get(string));
+	@Override
+	protected void done() {
+		// TODO Auto-generated method stub
+		super.done();
+	}
+
+	@Override
+	protected void process(List<PdfInfo> chunks) {
+		// TODO Auto-generated method stub
+		super.process(chunks);
 	}
 }

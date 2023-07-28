@@ -7,7 +7,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.tinylog.Logger;
 
-class ExtractText implements Callable<PdfInfo> {
+public class ExtractText implements Callable<PdfInfo> {
 
 	private PDDocument document;
 
