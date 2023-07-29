@@ -1,10 +1,21 @@
-package de.m_bleil.pdfsearchable.investigator;
+package de.m_bleil.pdfsearchable.application.model;
 
 import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class PdfClassifierTest {
+
+	/*
+	 * Write good tests:
+	 * Arrange
+	 * Act
+	 * Assert
+	 *
+	 * see: Michael Tamm, JUnit Profiwissen (1. Auflage 2013), Kapitel 7.5 Der AAA
+	 * Stil
+	 */
 
 	@Test
 	public void testATextCorrectClassified() {

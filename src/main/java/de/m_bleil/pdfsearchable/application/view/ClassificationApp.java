@@ -3,7 +3,6 @@ package de.m_bleil.pdfsearchable.application.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -19,9 +18,8 @@ import javax.swing.JTextField;
 import de.m_bleil.pdfsearchable.application.controller.ClassificationController;
 import de.m_bleil.pdfsearchable.application.model.ClassificationModel;
 import de.m_bleil.pdfsearchable.application.model.ClassificationModelListener;
-import de.m_bleil.pdfsearchable.investigator.PdfClassifier;
-import de.m_bleil.pdfsearchable.investigator.PdfInfo;
-import de.m_bleil.pdfsearchable.investigator.PdfInvestigator;
+import de.m_bleil.pdfsearchable.application.model.PdfClassifier;
+import de.m_bleil.pdfsearchable.application.model.PdfInfo;
 
 public class ClassificationApp extends JFrame implements ClassificationModelListener {
 
@@ -44,21 +42,6 @@ public class ClassificationApp extends JFrame implements ClassificationModelList
 		this.classificationController = new ClassificationController(this.classificationModel);
 
 		initGui();
-	}
-
-	private void onStartPdfClassification(ActionEvent event) {
-		PdfInvestigator inv = new PdfInvestigator();
-		PdfClassifier classifier = new PdfClassifier();
-
-		List<PdfInfo> result = inv.investigatePath(rootPathTextField.getText());
-
-		result.forEach(r -> resultTextArea
-				.setText(resultTextArea.getText()
-						+ (classifier.classify(r.content()) ? "durchsuchbar:"
-								: "nicht durchsuchbar:")
-						+ "\t"
-						+ r.path()
-						+ "\n"));
 	}
 
 	private void onOpenRoot(ActionEvent event) {

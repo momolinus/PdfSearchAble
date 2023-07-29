@@ -5,8 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.m_bleil.pdfsearchable.investigator.PdfInfo;
-
 public class ClassificationModel implements PropertyChangeListener {
 
 	private List<ClassificationModelListener> listener = new ArrayList<>();

@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import javax.swing.SwingWorker;
@@ -22,22 +21,15 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.tinylog.Logger;
 
-import de.m_bleil.pdfsearchable.investigator.ExtractText;
-import de.m_bleil.pdfsearchable.investigator.PdfClassifier;
-import de.m_bleil.pdfsearchable.investigator.PdfFileVisitor;
-import de.m_bleil.pdfsearchable.investigator.PdfInfo;
-
 public class PdfClassificationUpdater extends SwingWorker<List<PdfInfo>, PdfInfo> {
 
 	public static final String PDF_FILE_EXTENSION = ".pdf";
 	public static final String PDF_CLASSIFIED = "pdf_classified";
 
 	private String path;
-	private PdfClassifier classifier;
 
 	public PdfClassificationUpdater(String path) {
 		this.path = path;
-		classifier = new PdfClassifier();
 	}
 
 	private ArrayList<PdfInfo> buildResult(Map<Path, PDDocument> pdfDocuments,
@@ -47,10 +39,9 @@ public class PdfClassificationUpdater extends SwingWorker<List<PdfInfo>, PdfInfo
 		var results = new ArrayList<PdfInfo>();
 
 		for (int i = 0; i < pdfDocuments.size(); i++) {
-			Future<PdfInfo> result;
 
-			result = completionService.take();
-			PdfInfo pdfInfo = result.get();
+			var result = completionService.take();
+			var pdfInfo = result.get();
 			results.add(pdfInfo);
 			publish(pdfInfo);
 
@@ -70,7 +61,7 @@ public class PdfClassificationUpdater extends SwingWorker<List<PdfInfo>, PdfInfo
 						return pdD;
 					}
 					catch (IOException e) {
-						Logger.warn(e);
+						Logger.warn(e, "exception for path '{}'", f.toString());
 						var pdD = new PDDocument();
 						pdD.addPage(new PDPage());
 						return pdD;

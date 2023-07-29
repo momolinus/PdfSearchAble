@@ -1,4 +1,4 @@
-package de.m_bleil.pdfsearchable.investigator;
+package de.m_bleil.pdfsearchable.application.model;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
