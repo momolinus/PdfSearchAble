@@ -18,7 +18,7 @@ public class PdfClassifierTest {
 	 */
 
 	@Test
-	public void testATextCorrectClassified() {
+	public void testATextCorrectClassified1() {
 		PdfClassifier classifier = new PdfClassifier();
 
 		boolean searchAbel = classifier.classify("Hello World");
@@ -27,7 +27,16 @@ public class PdfClassifierTest {
 	}
 
 	@Test
-	public void testEmptyTextCorrectClassified() {
+	public void testATextCorrectClassified2() {
+		PdfClassifier classifier = new PdfClassifier();
+
+		boolean searchAbel = classifier.classify("Hello\n\rWorld\n\rBerlin");
+
+		assertThat(searchAbel, is(true));
+	}
+
+	@Test
+	public void testEmptyTextCorrectClassified1() {
 		PdfClassifier classifier = new PdfClassifier();
 
 		boolean searchAbel = classifier.classify("");
@@ -36,10 +45,28 @@ public class PdfClassifierTest {
 	}
 
 	@Test
-	public void testNewLinesCorrectClassified() {
+	public void testEmptyTextCorrectClassified2() {
+		PdfClassifier classifier = new PdfClassifier();
+
+		boolean searchAbel = classifier.classify("   \n   ");
+
+		assertThat(searchAbel, is(false));
+	}
+
+	@Test
+	public void testNewLinesCorrectClassified1() {
 		PdfClassifier classifier = new PdfClassifier();
 
 		boolean searchAbel = classifier.classify("\nz\r");
+
+		assertThat(searchAbel, is(true));
+	}
+
+	@Test
+	public void testNewLinesCorrectClassified2() {
+		PdfClassifier classifier = new PdfClassifier();
+
+		boolean searchAbel = classifier.classify("Lorem\nIpsum");
 
 		assertThat(searchAbel, is(true));
 	}
@@ -54,10 +81,19 @@ public class PdfClassifierTest {
 	}
 
 	@Test
-	public void testOnlyNewLinesCorrectClassified() {
+	public void testOnlyNewLinesCorrectClassified1() {
 		PdfClassifier classifier = new PdfClassifier();
 
 		boolean searchAbel = classifier.classify("\n\r");
+
+		assertThat(searchAbel, is(false));
+	}
+
+	@Test
+	public void testOnlyNewLinesCorrectClassified2() {
+		PdfClassifier classifier = new PdfClassifier();
+
+		boolean searchAbel = classifier.classify("\n");
 
 		assertThat(searchAbel, is(false));
 	}

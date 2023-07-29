@@ -22,6 +22,7 @@ public class PdfClassifier {
 				Arrays
 						.stream(characters)
 						.filter(z -> !z.equals(" "))
+						.filter(z -> z.length() > 0)
 						.collect(Collectors.toList());
 
 		return charactersNotEmpty.size() > 0;
